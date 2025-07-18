@@ -1,10 +1,6 @@
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
 local player = Players.LocalPlayer
-
--- Hide all default Roblox UI elements
-StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
 
 -- Create GUI
 local gui = Instance.new("ScreenGui")
@@ -19,7 +15,7 @@ background.Size = UDim2.new(1, 0, 1, 0)
 background.Position = UDim2.new(0, 0, 0, 0)
 background.BackgroundColor3 = Color3.new(0, 0, 0)
 background.BackgroundTransparency = 1
-background.ZIndex = 999999999
+background.ZIndex = 1
 background.Active = false -- let input pass through
 background.Parent = gui
 
@@ -34,7 +30,7 @@ robloxLogo.Font = Enum.Font.GothamBlack
 robloxLogo.TextScaled = true
 robloxLogo.Text = "ROBLOX"
 robloxLogo.TextTransparency = 1
-robloxLogo.ZIndex = 1000000000
+robloxLogo.ZIndex = 2
 robloxLogo.Parent = gui
 
 -- Maintenance message
@@ -49,7 +45,7 @@ message.TextScaled = true
 message.TextWrapped = true
 message.Text = "Roblox is having issues with Grow a Garden.\nPlease wait while we update..."
 message.TextTransparency = 1
-message.ZIndex = 1000000000
+message.ZIndex = 2
 message.Parent = gui
 
 -- Reconnecting animation
@@ -63,7 +59,7 @@ reconnect.Font = Enum.Font.GothamMedium
 reconnect.TextScaled = true
 reconnect.Text = "Reconnecting"
 reconnect.TextTransparency = 1
-reconnect.ZIndex = 1000000000
+reconnect.ZIndex = 2
 reconnect.Parent = gui
 
 -- Add to CoreGui
